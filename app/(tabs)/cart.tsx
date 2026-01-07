@@ -26,7 +26,16 @@ export default function Cart() {
     .filter((i) => selectedItems.includes(i.id))
     .reduce((sum, i) => sum + i.price * (i.quantity ?? 1), 0);
 
-  if (!cart.length) return <EmptyState text="Keranjang kamu kosong." />;
+  if (!cart.length) {
+    return (
+      <EmptyState
+      text="Keranjang kamu kosong"
+      description="Yuk cari produk favoritmu dulu"
+      actionText="Cari Produk"
+      actionHref="/home"
+    />
+    );
+  }
 
   return (
     <View style={{ flex: 1, padding: 16, backgroundColor: themeObj.background }}>
@@ -43,7 +52,7 @@ export default function Cart() {
         data={cart}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <CartItemCard item={item} />}
-        extraData={selectedItems} // memastikan re-render ketika checkbox berubah
+        extraData={selectedItems}
       />
 
       <View style={styles.totalContainer}>

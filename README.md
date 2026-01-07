@@ -1,50 +1,48 @@
-# Welcome to your Expo app 👋
+# Gaming Gear Shop 🎮
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplikasi mobile e-commerce untuk penjualan peralatan gaming, dibangun menggunakan **React Native (Expo)** dan **Supabase**.
 
-## Get started
+## 📱 Fitur Utama
 
-1. Install dependencies
+- **Autentikasi Pengguna**: Login & Register dengan aman.
+- **Katalog Produk**: Menampilkan daftar produk gaming gear dengan filter kategori.
+- **Detail Produk**: Informasi lengkap produk, harga, dan stok.
+- **Keranjang Belanja**: Tambah, hapus, dan update jumlah item.
+- **Favorit**: Simpan produk ke daftar keinginan.
+- **Checkout & Order**: Proses pembelian lengkap dengan pilihan pengiriman dan metode pembayaran.
+- **Riwayat Pesanan**: Lihat status dan detail transaksi masa lalu.
+- **Manajemen Profil**: Edit informasi pengguna dan alamat pengiriman.
+- **Admin Panel**: (Khusus Admin) Tambah, edit, dan hapus produk.
+- **Mode Gelap/Terang**: Dukungan tema sesuai preferensi sistem atau user.
 
+## 🛠 Teknologi yang Digunakan
+
+- **Frontend**: React Native, Expo Router.
+- **State Management**: Zustand.
+- **Backend & Database**: Supabase (PostgreSQL).
+- **Storage**: Supabase Storage (untuk gambar produk).
+- **Styling**: React Native StyleSheet, Themed Components.
+
+## 🚀 Cara Menjalankan Project
+
+1. **Install Dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Konfigurasi Environment**
+   Pastikan file `.env` atau konfigurasi Supabase sudah terpasang di `lib/supabase.ts`.
 
+3. **Jalankan Aplikasi**
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## 📂 Struktur Project
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `app/`: Halaman dan routing (Expo Router).
+- `components/`: Komponen UI reusable.
+- `store/`: State management (Zustand) dan logika bisnis.
+- `lib/`: Konfigurasi Supabase dan utilitas lain.
+- `constants/`: Konstanta aplikasi (Warna, dll).
+- `assets/`: Gambar dan font statis.
