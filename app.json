@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gaminggearshop",
-    "deeplinks": true,
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

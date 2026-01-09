@@ -1,18 +1,19 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
+import { Product, useShopStore } from "@/store/useShopStore";
+import { dark, light } from "@/theme/theme";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import Head from "expo-router/head";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Image,
   ActivityIndicator,
   Alert,
+  Image,
+  Pressable,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { supabase } from "@/lib/supabase";
-import { useShopStore, Product } from "@/store/useShopStore";
-import { dark, light } from "@/theme/theme";
 import Toast from "react-native-toast-message";
 
 export default function ProductDetail() {
@@ -24,7 +25,7 @@ export default function ProductDetail() {
   const addToCart = useShopStore((s) => s.addToCart);
   const toggleFavorite = useShopStore((s) => s.toggleFavorite);
   const favorites = useShopStore((s) => s.favorites);
-  const isAdmin = useShopStore((s) => s.isAdmin); 
+  const isAdmin = useShopStore((s) => s.isAdmin);
 
   const themeObj = theme === "dark" ? dark : light;
 
@@ -62,14 +63,14 @@ export default function ProductDetail() {
   };
 
   /* ================= ACTIONS ================= */
-  
+
   // 1. Tambah ke Keranjang
   const handleAddToCart = () => {
     if (!product) return;
     for (let i = 0; i < qty; i++) addToCart(product);
-    
+
     Toast.show({
-      type: "success_cart", 
+      type: "success_cart",
       text1: "Berhasil!",
       text2: `${qty}x ${product.name} masuk keranjang`,
     });
@@ -80,22 +81,22 @@ export default function ProductDetail() {
     if (!product) return;
     const willBeFavorite = !isFavorite;
 
-    await toggleFavorite(product); 
+    await toggleFavorite(product);
 
     if (willBeFavorite) {
-        Toast.show({
-            type: "action_favorite",
-            text1: "Disukai!",
-            text2: "Produk disimpan ke favorit",
-            visibilityTime: 1500,
-        });
+      Toast.show({
+        type: "action_favorite",
+        text1: "Disukai!",
+        text2: "Produk disimpan ke favorit",
+        visibilityTime: 1500,
+      });
     } else {
-        Toast.show({
-            type: "remove_favorite",
-            text1: "Dihapus",
-            text2: "Produk dihapus dari favorit",
-            visibilityTime: 1500,
-        });
+      Toast.show({
+        type: "remove_favorite",
+        text1: "Dihapus",
+        text2: "Produk dihapus dari favorit",
+        visibilityTime: 1500,
+      });
     }
   };
 
@@ -111,18 +112,18 @@ export default function ProductDetail() {
           style: "destructive",
           onPress: async () => {
             const { error } = await supabase.from("products").delete().eq("id", id);
-            
+
             if (error) {
-                Alert.alert("Gagal", "Terjadi kesalahan saat menghapus.");
-                return;
+              Alert.alert("Gagal", "Terjadi kesalahan saat menghapus.");
+              return;
             }
 
             Toast.show({
-              type: "remove_favorite", 
+              type: "remove_favorite",
               text1: "Terhapus",
               text2: "Produk berhasil dihapus permanen",
             });
-            
+
             router.replace("/home");
           },
         },
@@ -133,8 +134,8 @@ export default function ProductDetail() {
   // 4. Edit Produk (ADMIN ONLY)
   const handleEdit = () => {
     router.push({
-        pathname: "/addproduct",
-        params: { id: product?.id }
+      pathname: "/addproduct",
+      params: { id: product?.id }
     });
   };
 
@@ -159,109 +160,124 @@ export default function ProductDetail() {
   return (
     <View style={[styles.container, { backgroundColor: themeObj.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        
+
+        {/* --- META TAGS (OPEN GRAPH) --- */}
+        <Head>
+          <title>{product ? `${product.name} | GamingGearShop` : "Detail Produk"}</title>
+          <meta property="og:title" content={product ? product.name : "Gaming Gear Shop"} />
+          <meta
+            property="og:description"
+            content={product
+              ? `Beli ${product.name} hanya Rp ${product.price.toLocaleString("id-ID")}. Stok terbatas!`
+              : "Temukan gaming gear terbaik di sini."}
+          />
+          <meta property="og:image" content={product?.image || "https://listing-images-bucket.s3.amazonaws.com/default-preview.png"} />
+          <meta property="og:type" content="product" />
+          <meta property="og:site_name" content="GamingGearShop" />
+        </Head>
+
         {/* --- IMAGE HEADER --- */}
         <View style={styles.imageContainer}>
-            {product.image ? (
-                <Image
-                source={{ uri: product.image }}
-                style={styles.image}
-                resizeMode="contain"
-                />
-            ) : (
-                <View style={[styles.image, styles.center, {backgroundColor: '#EEE'}]}>
-                    <Text style={{color: '#888'}}>No Image</Text>
-                </View>
-            )}
+          {product.image ? (
+            <Image
+              source={{ uri: product.image }}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          ) : (
+            <View style={[styles.image, styles.center, { backgroundColor: '#EEE' }]}>
+              <Text style={{ color: '#888' }}>No Image</Text>
+            </View>
+          )}
         </View>
 
         {/* --- PRODUCT INFO --- */}
         <Text style={[styles.name, { color: themeObj.text }]}>
-            {product.name}
+          {product.name}
         </Text>
 
         <Text style={[styles.price, { color: themeObj.accent }]}>
-            Rp {product.price.toLocaleString("id-ID")}
+          Rp {product.price.toLocaleString("id-ID")}
         </Text>
 
         {/* --- META DATA --- */}
         <View style={styles.metaRow}>
-           <View style={[styles.badge, { backgroundColor: themeObj.subtext + '20' }]}>
-              <Text style={{ color: themeObj.text, fontSize: 13, fontWeight: "600" }}>
-                 📦 Stok: {product.stock ?? 0}
-              </Text>
-           </View>
+          <View style={[styles.badge, { backgroundColor: themeObj.subtext + '20' }]}>
+            <Text style={{ color: themeObj.text, fontSize: 13, fontWeight: "600" }}>
+              📦 Stok: {product.stock ?? 0}
+            </Text>
+          </View>
         </View>
 
         {/* --- DESCRIPTION --- */}
         <Text style={[styles.sectionTitle, { color: themeObj.text }]}>Deskripsi Produk</Text>
         <Text style={[styles.desc, { color: themeObj.subtext }]}>
-            {product.description ? product.description : "Tidak ada deskripsi untuk produk ini."}
+          {product.description ? product.description : "Tidak ada deskripsi untuk produk ini."}
         </Text>
 
         {/* --- CONTROLS --- */}
-        
+
         {/* Quantity Selector */}
         <View style={styles.qtyRow}>
-            <Text style={{color: themeObj.text, fontWeight:'bold', marginRight: 15}}>Jumlah:</Text>
-            <View style={styles.qtyWrapper}>
-                <Pressable onPress={() => setQty((q) => Math.max(1, q - 1))} style={styles.qtyBtn}>
-                    <Text style={styles.qtyText}>−</Text>
-                </Pressable>
-                
-                <Text style={[styles.qtyValue, { color: themeObj.text }]}>
-                    {qty}
-                </Text>
-                
-                <Pressable onPress={() => setQty((q) => q + 1)} style={styles.qtyBtn}>
-                    <Text style={styles.qtyText}>+</Text>
-                </Pressable>
-            </View>
+          <Text style={{ color: themeObj.text, fontWeight: 'bold', marginRight: 15 }}>Jumlah:</Text>
+          <View style={styles.qtyWrapper}>
+            <Pressable onPress={() => setQty((q) => Math.max(1, q - 1))} style={styles.qtyBtn}>
+              <Text style={styles.qtyText}>−</Text>
+            </Pressable>
+
+            <Text style={[styles.qtyValue, { color: themeObj.text }]}>
+              {qty}
+            </Text>
+
+            <Pressable onPress={() => setQty((q) => q + 1)} style={styles.qtyBtn}>
+              <Text style={styles.qtyText}>+</Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* Action Buttons */}
-        <View style={{gap: 12}}>
-            <Pressable
-                style={[styles.primaryBtn, { backgroundColor: themeObj.accent }]}
-                onPress={handleAddToCart}
-            >
-                <Text style={styles.primaryText}>Tambah ke Keranjang</Text>
-            </Pressable>
+        <View style={{ gap: 12 }}>
+          <Pressable
+            style={[styles.primaryBtn, { backgroundColor: themeObj.accent }]}
+            onPress={handleAddToCart}
+          >
+            <Text style={styles.primaryText}>Tambah ke Keranjang</Text>
+          </Pressable>
 
-            <Pressable
-                style={[styles.secondaryBtn, { backgroundColor: themeObj.subtext + '20' }]}
-                onPress={toggleFavoriteAction}
-            >
-                <Text style={[styles.btnText, { color: themeObj.text }]}>
-                {isFavorite ? "❤️ Sudah di Favorit" : "🤍 Tambah ke Favorit"}
-                </Text>
-            </Pressable>
+          <Pressable
+            style={[styles.secondaryBtn, { backgroundColor: themeObj.subtext + '20' }]}
+            onPress={toggleFavoriteAction}
+          >
+            <Text style={[styles.btnText, { color: themeObj.text }]}>
+              {isFavorite ? "❤️ Sudah di Favorit" : "🤍 Tambah ke Favorit"}
+            </Text>
+          </Pressable>
         </View>
 
         {/* --- ADMIN AREA (Hanya Muncul Jika Admin) --- */}
         {isAdmin && (
-            <View style={styles.adminSection}>
-                <View style={styles.divider} />
-                <Text style={{color: themeObj.subtext, marginBottom: 12, fontWeight:'bold', letterSpacing: 1}}>
-                    ADMIN PANEL
-                </Text>
-                
-                <View style={{flexDirection: 'row', gap: 10}}>
-                    {/* Edit Button */}
-                    <Pressable onPress={handleEdit} style={[styles.adminBtn, { backgroundColor: "#FFA000" }]}>
-                        <Text style={styles.adminBtnText}>✏️ Edit</Text>
-                    </Pressable>
+          <View style={styles.adminSection}>
+            <View style={styles.divider} />
+            <Text style={{ color: themeObj.subtext, marginBottom: 12, fontWeight: 'bold', letterSpacing: 1 }}>
+              ADMIN PANEL
+            </Text>
 
-                    {/* Delete Button */}
-                    <Pressable onPress={handleDelete} style={[styles.adminBtn, { backgroundColor: "#D32F2F" }]}>
-                        <Text style={styles.adminBtnText}>🗑️ Hapus</Text>
-                    </Pressable>
-                </View>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {/* Edit Button */}
+              <Pressable onPress={handleEdit} style={[styles.adminBtn, { backgroundColor: "#FFA000" }]}>
+                <Text style={styles.adminBtnText}>✏️ Edit</Text>
+              </Pressable>
+
+              {/* Delete Button */}
+              <Pressable onPress={handleDelete} style={[styles.adminBtn, { backgroundColor: "#D32F2F" }]}>
+                <Text style={styles.adminBtnText}>🗑️ Hapus</Text>
+              </Pressable>
             </View>
+          </View>
         )}
 
         {/* Spacer */}
-        <View style={{height: 50}} />
+        <View style={{ height: 50 }} />
       </ScrollView>
     </View>
   );
@@ -365,7 +381,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4
   },

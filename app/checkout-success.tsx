@@ -1,10 +1,10 @@
+import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { useShopStore } from "../store/useShopStore";
 import { dark, light } from "../theme/theme";
-import { useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
-import Toast from "react-native-toast-message";
 
 export default function CheckoutSuccess() {
   const theme = useShopStore((s) => s.theme);
@@ -56,7 +56,7 @@ export default function CheckoutSuccess() {
           styles.btn,
           { backgroundColor: themeObj.accent },
         ]}
-        onPress={() => router.replace("/home")}
+        onPress={() => router.replace("/(tabs)/home")}
       >
         <Text style={styles.btnText}>
           Kembali ke Home

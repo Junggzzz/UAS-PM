@@ -1,38 +1,38 @@
+import { supabase } from "@/lib/supabase";
+import { useShopStore } from "@/store/useShopStore";
+import { dark, light } from "@/theme/theme";
+import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-  Image,
   ActivityIndicator,
   Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import * as ImagePicker from "expo-image-picker"; 
-import { useShopStore } from "@/store/useShopStore";
-import { supabase } from "@/lib/supabase";
 import Toast from "react-native-toast-message";
-import { dark, light } from "@/theme/theme";
 
 export default function AddProductScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const productId = params.id as string; 
+  const productId = params.id as string;
   const isEditMode = !!productId;
 
   const theme = useShopStore((s) => s.theme);
   const themeObj = theme === "dark" ? dark : light;
   const isAdmin = useShopStore((s) => s.isAdmin);
-  
+
   const addProduct = useShopStore((s) => s.addProduct);
   const updateProduct = useShopStore((s) => s.updateProduct);
 
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-  
+
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [desc, setDesc] = useState("");
@@ -40,9 +40,9 @@ export default function AddProductScreen() {
 
   useEffect(() => {
     if (!isAdmin) {
-        Alert.alert("Akses Ditolak", "Hanya admin yang boleh masuk sini.");
-        router.replace("/home");
-        return;
+      Alert.alert("Akses Ditolak", "Hanya admin yang boleh masuk sini.");
+      router.replace("/(tabs)/home");
+      return;
     }
 
     if (isEditMode) {
@@ -100,14 +100,14 @@ export default function AddProductScreen() {
     const newImageUri = image?.startsWith("file") ? image : undefined;
 
     try {
-        if (isEditMode) {
-            success = await updateProduct(productId, payload, newImageUri);
-        } else {
-            success = await addProduct({ ...payload, image: "" }, newImageUri);
-        }
+      if (isEditMode) {
+        success = await updateProduct(productId, payload, newImageUri);
+      } else {
+        success = await addProduct({ ...payload, image: "" }, newImageUri);
+      }
     } catch (err) {
-        console.error("Error submit:", err);
-        success = false;
+      console.error("Error submit:", err);
+      success = false;
     }
 
     setLoading(false);
@@ -119,10 +119,10 @@ export default function AddProductScreen() {
       });
       router.back();
     } else {
-      Toast.show({ 
-          type: "error", 
-          text1: "Gagal menyimpan", 
-          text2: "Cek koneksi atau izin database" 
+      Toast.show({
+        type: "error",
+        text1: "Gagal menyimpan",
+        text2: "Cek koneksi atau izin database"
       });
     }
   };
@@ -170,7 +170,7 @@ export default function AddProductScreen() {
               onChangeText={setPrice}
             />
           </View>
-          
+
           <View style={[styles.formGroup, { flex: 1, marginLeft: 8 }]}>
             <Text style={[styles.label, { color: themeObj.text }]}>Stok</Text>
             <TextInput
@@ -212,8 +212,8 @@ export default function AddProductScreen() {
             </Text>
           )}
         </Pressable>
-        
-        <View style={{height: 50}} />
+
+        <View style={{ height: 50 }} />
       </ScrollView>
     </View>
   );
