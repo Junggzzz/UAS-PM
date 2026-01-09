@@ -1,6 +1,5 @@
-import { create } from "zustand";
 import { supabase } from "@/lib/supabase";
-import { decode } from "base64-arraybuffer"; 
+import { create } from "zustand";
 
 /* =======================
    TYPES
@@ -13,8 +12,8 @@ export interface Product {
   image?: string;
   description?: string;
   category?: string;
-  stock?: number;    
-  quantity?: number; 
+  stock?: number;
+  quantity?: number;
 }
 
 export interface Profile {
@@ -112,12 +111,12 @@ const uploadImage = async (uri: string) => {
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
-    
+
     const arrayBuffer = await new Response(blob).arrayBuffer();
 
     const fileExt = uri.split('.').pop()?.toLowerCase() || 'jpg';
     const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `${fileName}`; 
+    const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from("products")
@@ -159,8 +158,8 @@ export const useShopStore = create<ShopState>((set, get) => ({
     if (error) return false;
 
     set({ user: data.user });
-    
-    await get().fetchProfile(); 
+
+    await get().fetchProfile();
     await get().fetchFavorites();
     await get().fetchCart();
     await get().fetchOrders();
@@ -168,11 +167,25 @@ export const useShopStore = create<ShopState>((set, get) => ({
   },
 
   register: async (email, password) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-    return !error;
+
+    if (error || !data.user) return false;
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: data.user.id,
+      full_name: email.split("@")[0],
+      address: "-",
+      role: "user",
+    });
+
+    if (profileError) {
+      console.error("Error creating profile:", profileError);
+      return false;
+    }
+
+    return true;
   },
 
   logout: async () => {
@@ -204,9 +217,9 @@ export const useShopStore = create<ShopState>((set, get) => ({
       .single();
 
     if (data) {
-      set({ 
+      set({
         profile: data,
-        isAdmin: data.role === 'admin' 
+        isAdmin: data.role === 'admin'
       });
     }
   },
@@ -227,32 +240,32 @@ export const useShopStore = create<ShopState>((set, get) => ({
   },
 
   /* ===== PRODUCT CRUD (ADMIN) ===== */
-  
+
   addProduct: async (productData, imageUri) => {
     if (!get().isAdmin) return false;
 
     let finalImageUrl = productData.image || "";
 
     if (imageUri) {
-        const uploadedUrl = await uploadImage(imageUri);
-        if (uploadedUrl) {
-            finalImageUrl = uploadedUrl;
-        } else {
-            console.error("Gagal upload gambar");
-            return false; 
-        }
+      const uploadedUrl = await uploadImage(imageUri);
+      if (uploadedUrl) {
+        finalImageUrl = uploadedUrl;
+      } else {
+        console.error("Gagal upload gambar");
+        return false;
+      }
     }
     const { error } = await supabase.from("products").insert({
       name: productData.name,
       price: productData.price,
       description: productData.description,
-      category: productData.category || "General", 
+      category: productData.category || "General",
       stock: productData.stock || 0,
       image: finalImageUrl,
     });
 
     if (error) {
-        console.error("Error inserting product:", error);
+      console.error("Error inserting product:", error);
     }
 
     return !error;
@@ -264,8 +277,8 @@ export const useShopStore = create<ShopState>((set, get) => ({
     let finalImageUrl = updates.image;
 
     if (imageUri) {
-        const uploadedUrl = await uploadImage(imageUri);
-        if (uploadedUrl) finalImageUrl = uploadedUrl;
+      const uploadedUrl = await uploadImage(imageUri);
+      if (uploadedUrl) finalImageUrl = uploadedUrl;
     }
 
     const { error } = await supabase
@@ -353,15 +366,15 @@ export const useShopStore = create<ShopState>((set, get) => ({
   },
 
   removeFromCart: (id) => {
-      set((s) => ({
-        cart: s.cart.filter((c) => c.id !== id),
-        selectedCartItems: s.selectedCartItems.filter((sid) => sid !== id),
-      }));
-      
-      const user = get().user;
-      if (user) {
-          supabase.from("cart_items").delete().eq("user_id", user.id).eq("product_id", id).then();
-      }
+    set((s) => ({
+      cart: s.cart.filter((c) => c.id !== id),
+      selectedCartItems: s.selectedCartItems.filter((sid) => sid !== id),
+    }));
+
+    const user = get().user;
+    if (user) {
+      supabase.from("cart_items").delete().eq("user_id", user.id).eq("product_id", id).then();
+    }
   },
 
   updateQuantity: (id, quantity) => {
@@ -374,7 +387,7 @@ export const useShopStore = create<ShopState>((set, get) => ({
 
     const user = get().user;
     if (user) {
-        supabase.from("cart_items").update({ quantity: newQty }).eq("user_id", user.id).eq("product_id", id).then();
+      supabase.from("cart_items").update({ quantity: newQty }).eq("user_id", user.id).eq("product_id", id).then();
     }
   },
 
@@ -572,7 +585,7 @@ export const useShopStore = create<ShopState>((set, get) => ({
 supabase.auth.getSession().then(async ({ data }) => {
   if (data.session?.user) {
     useShopStore.setState({ user: data.session.user });
-    
+
     const store = useShopStore.getState();
     await store.fetchProfile();
     await store.fetchFavorites();
