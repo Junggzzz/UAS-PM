@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import { BaseToast, ErrorToast } from "react-native-toast-message";
 
 export const toastConfig = {
@@ -33,6 +33,28 @@ export const toastConfig = {
       <Text
         style={{
           color: "#FFD700",
+          fontWeight: "700",
+          fontSize: 14,
+        }}
+      >
+        {text1}
+      </Text>
+    </View>
+  ),
+  remove_favorite: ({ text1 }: any) => (
+    <View
+      style={{
+        backgroundColor: "#1E1E1E",
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderRadius: 12,
+        minWidth: 220,
+        alignItems: "center",
+      }}
+    >
+      <Text
+        style={{
+          color: "#FF4444",
           fontWeight: "700",
           fontSize: 14,
         }}
