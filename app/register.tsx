@@ -1,7 +1,7 @@
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
-import { useState } from "react";
-import { router } from "expo-router";
 import { useShopStore } from "@/store/useShopStore";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 export default function Register() {
   const register = useShopStore((s) => s.register);
@@ -65,6 +65,12 @@ export default function Register() {
       >
         <Text style={{ textAlign: "center", fontWeight: "700" }}>
           Register
+        </Text>
+      </Pressable>
+
+      <Pressable onPress={() => router.replace("/login")}>
+        <Text style={{ textAlign: "center", marginTop: 12 }}>
+          Sudah punya akun? Login
         </Text>
       </Pressable>
     </View>
