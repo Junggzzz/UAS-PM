@@ -1,19 +1,19 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Pressable,
-  Modal,
   FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
   StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import { useShopStore, Product } from "../store/useShopStore";
-import { dark, light } from "../theme/theme";
-import EmptyState from "../components/EmptyState";
 import Toast from "react-native-toast-message";
-import { useRouter } from "expo-router";
+import EmptyState from "../components/EmptyState";
+import { Product, useShopStore } from "../store/useShopStore";
+import { dark, light } from "../theme/theme";
 
 /* =======================
    TYPES
@@ -109,32 +109,32 @@ export default function Checkout() {
 
   /* ===== CHECKOUT ===== */
   const handleCheckout = () => {
-  if (!selectedItems.length)
-    return Toast.show({ type: "error", text1: "Pilih produk terlebih dahulu" });
+    if (!selectedItems.length)
+      return Toast.show({ type: "error", text1: "Pilih produk terlebih dahulu" });
 
-  if (!shippingName.trim())
-    return Toast.show({ type: "error", text1: "Nama penerima wajib diisi" });
+    if (!shippingName.trim())
+      return Toast.show({ type: "error", text1: "Nama penerima wajib diisi" });
 
-  if (!shippingAddress.trim())
-    return Toast.show({ type: "error", text1: "Alamat wajib diisi" });
+    if (!shippingAddress.trim())
+      return Toast.show({ type: "error", text1: "Alamat wajib diisi" });
 
-  if (!selectedShipping)
-    return Toast.show({ type: "error", text1: "Pilih opsi pengiriman" });
+    if (!selectedShipping)
+      return Toast.show({ type: "error", text1: "Pilih opsi pengiriman" });
 
-  if (!selectedPayment)
-    return Toast.show({ type: "error", text1: "Pilih metode pembayaran" });
+    if (!selectedPayment)
+      return Toast.show({ type: "error", text1: "Pilih metode pembayaran" });
 
-  setAddress(shippingAddress);
+    setAddress(shippingAddress);
 
-  checkout();
+    checkout();
 
-  Toast.show({
-    type: "favorite",
-    text1: "✅ Pesanan berhasil dibuat",
-  });
+    Toast.show({
+      type: "success",
+      text1: "✅ Pesanan berhasil dibuat",
+    });
 
-  router.replace("/checkout-success");
-};
+    router.replace("/checkout-success");
+  };
 
 
   return (
